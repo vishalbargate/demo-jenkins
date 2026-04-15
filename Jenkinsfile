@@ -2,27 +2,16 @@ pipeline {
     agent any
 
     stages {
-        stage('GitHub Build') {
+        stage('Build Java') {
             steps {
-                echo 'Triggered from GitHub!'
+                sh 'javac src/main/java/App.java'
             }
         }
-    }
 
-    post {
-        success {
-            emailext (
-                to: 'vishalbargate@gmail.com',
-                subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: "Build succeeded!"
-            )
-        }
-        failure {
-            emailext (
-                to: 'vishalbargate@gmail.com',
-                subject: "FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: "Build failed!"
-            )
+        stage('Run App') {
+            steps {
+                sh 'java -cp src/main/java App'
+            }
         }
     }
 }
