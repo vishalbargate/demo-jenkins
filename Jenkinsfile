@@ -13,5 +13,21 @@ pipeline {
                 sh 'java -cp src/main/java App'
             }
         }
+
+        stage('Environment Based Action') {
+            steps {
+                script {
+                    if (env.BRANCH_NAME == 'dev') {
+                        echo "Deploying to DEV environment"
+                    } else if (env.BRANCH_NAME == 'uat') {
+                        echo "Deploying to UAT environment"
+                    } else if (env.BRANCH_NAME == 'prod') {
+                        echo "Deploying to PROD environment"
+                    } else {
+                        echo "Other branch: ${env.BRANCH_NAME}"
+                    }
+                }
+            }
+        }
     }
 }
