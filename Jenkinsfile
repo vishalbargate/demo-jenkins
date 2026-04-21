@@ -2,16 +2,25 @@ pipeline {
     agent any
 
     stages {
-        stage('Build Java') {
+        stage('Build') {
             steps {
-                sh 'javac src/main/java/App.java'
+                echo 'Building...'
             }
         }
+    }
 
-        stage('Run App') {
-            steps {
-                sh 'java -cp src/main/java App'
-            }
+    post {
+        success {
+            office365ConnectorSend(
+                webhookUrl: 'PASTE_YOUR_WEBHOOK_URL',
+                message: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+            )
+        }
+        failure {
+            office365ConnectorSend(
+                webhookUrl: 'PASTE_YOUR_WEBHOOK_URL',
+                message: "❌ FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+            )
         }
     }
 }
