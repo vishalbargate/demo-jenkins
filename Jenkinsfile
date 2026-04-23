@@ -8,17 +8,18 @@ stages {
         }
     }
 
-    stage('Deploy to Kubernetes') {
-        steps {
-            sh '''
-            kubectl exec kubectl-client -n jenkins-cancap -- \
-            kubectl apply -f https://raw.githubusercontent.com/vishalbargate/demo-jenkins/dev/demo-app.yaml
+stage('Deploy to Kubernetes') {
+steps {
+sh '''
+curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.27.0/bin/linux/amd64/kubectl
+chmod +x kubectl
 
-            kubectl exec kubectl-client -n jenkins-cancap -- \
-            kubectl apply -f https://raw.githubusercontent.com/vishalbargate/demo-jenkins/dev/demo-app-service.yaml
-            '''
-        }
-    }
+    ./kubectl apply -f https://raw.githubusercontent.com/vishalbargate/demo-jenkins/dev/demo-app.yaml -n jenkins-cancap
+    ./kubectl apply -f https://raw.githubusercontent.com/vishalbargate/demo-jenkins/dev/demo-app-service.yaml -n jenkins-cancap
+    '''
+}
+
+}
 }
 
     post {
