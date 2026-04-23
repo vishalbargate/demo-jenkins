@@ -2,32 +2,23 @@ pipeline {
     agent any
 
     stages {
-        stage('Build Java') {
+        stage('Build') {
             steps {
-                sh 'javac src/main/java/App.java'
+                echo "🚀 Building ${env.BRANCH_NAME} branch..."
             }
         }
+    }
 
-        stage('Run App') {
-            steps {
-                sh 'java -cp src/main/java App'
-            }
+    post {
+        success {
+            office365ConnectorSend(
+                message: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER} (${env.BRANCH_NAME})"
+            )
         }
-
-        stage('Environment Based Action') {
-            steps {
-                script {
-                    if (env.BRANCH_NAME == 'dev') {
-                        echo "Deploying to DEV environment"
-                    } else if (env.BRANCH_NAME == 'uat') {
-                        echo "Deploying to UAT environment"
-                    } else if (env.BRANCH_NAME == 'prod') {
-                        echo "Deploying to PROD environment"
-                    } else {
-                        echo "Other branch: ${env.BRANCH_NAME}"
-                    }
-                }
-            }
+        failure {
+            office365ConnectorSend(
+                message: "❌ FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER} (${env.BRANCH_NAME})"
+            )
         }
     }
 }
