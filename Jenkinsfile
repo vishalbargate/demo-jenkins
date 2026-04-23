@@ -1,13 +1,25 @@
 pipeline {
-    agent any
+agent any
 
-    stages {
-        stage('Build') {
-            steps {
-                echo '🚀 Building DEV branch...'
-            }
+stages {
+    stage('Build') {
+        steps {
+            echo '🚀 Building DEV branch...'
         }
     }
+
+    stage('Deploy to Kubernetes') {
+        steps {
+            sh '''
+            kubectl exec kubectl-client -n jenkins-cancap -- \
+            kubectl apply -f https://raw.githubusercontent.com/vishalbargate/demo-jenkins/dev/demo-app.yaml
+
+            kubectl exec kubectl-client -n jenkins-cancap -- \
+            kubectl apply -f https://raw.githubusercontent.com/vishalbargate/demo-jenkins/dev/demo-app-service.yaml
+            '''
+        }
+    }
+}
 
     post {
         success {
